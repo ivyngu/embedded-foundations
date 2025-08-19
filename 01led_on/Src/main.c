@@ -16,14 +16,71 @@
  ******************************************************************************
  */
 
-#include <stdint.h>
+ /*
+ Steps:
+  1. identify GPIO pin: PD12 > schematic 
+  
+  2. identify GPIO port: GPIO D > schematic 
+  
+  3. activate GPIOD clock > reference manual
+  
+  RCC base: 0x40023800
+  GPIOD connects via AHB1
+  AHB1 clock register: Address offset: 0x30, bit 4 for GPIOD
+  Address: 0x40023830
 
-#if !defined(__SOFT_FP__) && defined(__ARM_FP)
-  #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
-#endif
+  4. GPIOD base address: 0x40020C00
+  - mode: Address 0x40020C00 - 01 for output mode
+  - port output data register address 0x40020C14
+    - 12th pin -> 24-25 bit
+    - 2 bits for every pin
+
+  Notes:
+  - use uint32 because all peripheral registers are 32 bits
+  */
+
+  /*
+  using calculated mask values:
+  uint32_t *ptr_ahb1_clock_register = (uint32_t*)0x40023830;
+	uint32_t *ptr_gpiod_mode_register = (uint32_t*)0x40020C00;
+	uint32_t *ptr_gpiod_output_data_register = (uint32_t*)0x40020C14;
+
+  // enable the clock
+  // 1000 setting 4th bit becomes 0x08 b/c 2^3
+  *ptr_ahb_clock_enable |= 0x08;
+
+  // mode is 01
+  // clear 24-25 bit
+  *ptr_gpiod_mode_register &= 0xFCFFFFFF;
+  // set 24th bit
+  *ptr_gpiod_mode_register |= 0x01000000;
+  // setting 12th bit as HIGH
+  *ptr_gpiod_output_data |= 0x1000; 
+  */
+
+#include <stdint.h>
 
 int main(void)
 {
-    /* Loop forever */
-	for(;;);
+
+  uint32_t *ptr_ahb1_clock_register = (uint32_t*)0x40023830;
+	uint32_t *ptr_gpiod_mode_register = (uint32_t*)0x40020C00;
+	uint32_t *ptr_gpiod_output_data_register = (uint32_t*)0x40020C14;
+
+  // 1. Enable the clock
+  // 1000 setting 4th bit becomes 0x08 b/c 2^3
+  *ptr_ahb1_clock_register |= (1 << 3);
+
+  // 2. Enable output mode: 01
+  // clear 24-25 bit, use 3 bc that's 11
+  *ptr_gpiod_mode_register &= ~(3 << 24);
+  // set 24th bit
+  *ptr_gpiod_mode_register |= (1 << 24);
+  
+  // 3. Enable LED light on: setting 12th bit as HIGH
+  *ptr_gpiod_output_data_register |= (1 << 12); 
+  
+  /* Loop forever */
+	while(1);
+
 }
