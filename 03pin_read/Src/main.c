@@ -24,6 +24,30 @@
 
 int main(void)
 {
-    /* Loop forever */
-	for(;;);
+	uint32_t volatile *const ptr_ahb1_clock_register = (uint32_t*)0x40023830;
+	uint32_t volatile *const ptr_gpiod_mode_register = (uint32_t*)0x40020C00;
+	uint32_t volatile *const ptr_gpiod_output_data_register = (uint32_t*)0x40020C14;
+
+	uint32_t volatile *const ptr_gpioa_mode_register = (uint32_t*)0x40020000;
+	uint32_t volatile *const ptr_gpioa_input_data_register = (uint32_t*)0x40020010;
+
+		  *ptr_ahb1_clock_register |= (1 << 3);
+		  *ptr_ahb1_clock_register |= (1 << 0);
+
+		  *ptr_gpiod_mode_register &= ~(3 << 24);
+		  *ptr_gpiod_mode_register |= (1 << 24);
+
+		  *ptr_gpioa_mode_register &= ~(3 << 0);
+
+		  while (1) {
+		  uint8_t value = (uint8_t) *ptr_gpioa_input_data_register & 0x1;
+
+
+		  if (value) {
+			  *ptr_gpiod_output_data_register |= (1 << 12);
+
+		  } else {
+			  *ptr_gpiod_output_data_register &= ~(1 << 12);
+		  }
+		  }
 }

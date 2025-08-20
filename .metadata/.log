@@ -846,3 +846,19 @@ Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -keyring /Users/vy/.e
 
 !ENTRY org.eclipse.cdt.core 1 0 2025-08-17 21:53:56.959
 !MESSAGE Indexed '05keypad' (3 sources, 53 headers) in 2.26 sec: 1,954 declarations; 2,863 references; 0 unresolved inclusions; 2 syntax errors; 2 unresolved names (0.042%)
+!SESSION 2025-08-19 22:51:19.286 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -keyring /Users/vy/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -keyring /Users/vy/.eclipse_keyring
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-08-19 22:51:31.021
+!MESSAGE Log4j2 initialized with config file /Users/vy/Downloads/embedded/my_workspace/target/.metadata/.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-08-19 22:51:38.640
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 4 4 2025-08-19 22:51:38.679
+!MESSAGE ProjectImporter: mdfind -name lsregister didn't returned anything
