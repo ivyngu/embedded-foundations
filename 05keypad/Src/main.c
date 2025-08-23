@@ -17,13 +17,90 @@
  */
 
 #include <stdint.h>
+#include "main.h"
 
-#if !defined(__SOFT_FP__) && defined(__ARM_FP)
-  #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
-#endif
+void delay() {
+  for (uint32_t i = 0; i < 30000; i++);
+}
 
 int main(void)
 {
-    /* Loop forever */
-	for(;;);
+  
+  // 8 pins - 4 rows, 4 cols
+  // cols: PD11-08
+  // rows - PD 0-3
+
+  RCC_AHB1RSTR_t volatile *const ptr_ahb1_clock_register = (RCC_AHB1RSTR_t*)0x40023830;
+  GPIOx_MODER_t volatile *const ptr_gpiod_mode_register = (GPIOx_MODER_t*)0x40020C00;
+  GPIOx_PUPDR_t volatile *const ptr_gpiod_pull_up_register = (GPIOx_PUPDR_t*)0x40020C0C;
+  GPIOx_OTYPER_t volatile *const ptr_gpiod_output_data_register = (GPIOx_OTYPER_t*)0x40020C14;
+  GPIOx_IDR_t volatile *const ptr_gpiod_input_data_register = (GPIOx_IDR_t*)0x40020C10;
+
+  ptr_ahb1_clock_register->gpiod_en = 1;
+
+  ptr_gpiod_mode_register->pin_0->1;
+  ptr_gpiod_mode_register->pin_1->1;
+  ptr_gpiod_mode_register->pin_2->1;
+  ptr_gpiod_mode_register->pin_3->1;
+  ptr_gpiod_mode_register->pin_8->0;
+  ptr_gpiod_mode_register->pin_9->0;
+  ptr_gpiod_mode_register->pin_10->0;
+  ptr_gpiod_mode_register->pin_11->0;
+
+  ptr_gpiod_pull_up_register->pin_8=1;
+  ptr_gpiod_pull_up_register->pin_9=1;
+  ptr_gpiod_pull_up_register->pin_10=1;
+  ptr_gpiod_pull_up_register->pin_11=1;
+
+  ptr_gpiod_output_data_register->pin_0=1;
+  ptr_gpiod_output_data_register->pin_1=1;
+  ptr_gpiod_output_data_register->pin_2=1;
+  ptr_gpiod_output_data_register->pin_3=1;
+
+  // if key is not pressed -> HIGH; ow LOW
+
+  while(1) {
+    for (uint16_t i = 0; i < 4; i++) {
+      ptr_gpiod_output_data_register->pin_{i}=0;
+      for (uint16_t j = 8; j < 12; j++) {
+        if !(ptr_gpiod_input_data_register->pin_{j}) {
+          delay()
+          if (i == 0 && j == 8) {
+            printf("1");
+          } else if (i == 0 && j == 9) {
+            printf("2");
+          } else if (i == 0 && j == 10) {
+            printf("3");
+          } else if (i == 0 && j == 11) {
+            printf("A");
+          } else if (i == 1 && j == 8) {
+            printf("4");
+          } else if (i == 1 && j == 9) {
+            printf("5");
+          } else if (i == 1 && j == 10) {
+            printf("6");
+          } else if (i == 1 && j == 11) {
+            printf("B");
+          } else if (i == 2 && j == 8) {
+            printf("7");
+          } else if (i == 2 && j == 9) {
+            printf("8");
+          } else if (i == 2 && j == 10) {
+            printf("9");
+          } else if (i == 2 && j == 11) {
+            printf("C");
+          } else if (i == 3 && j == 8) {
+            printf("*");
+          } else if (i == 3 && j == 9) {
+            printf("0");
+          } else if (i == 3 && j == 10) {
+            printf("#");
+          } else if (i == 3 && j == 11) {
+            printf("D");
+          }
+        }
+      }
+      ptr_gpiod_output_data_register->pin_{i}=1;
+    }
+  }
 }
